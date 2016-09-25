@@ -1,5 +1,6 @@
 package com.alexytorres.ensiedt;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.Display;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -29,6 +33,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private String scheduleUrl;
     private String login;
     private String password;
+    private Button logoutButton;
 
     final private String scheduleFrame = "https://edt.grenoble-inp.fr/2016-2017/ensimag/etudiant/" +
             "jsp/custom/modules/plannings/direct_planning.jsp?resources=";
@@ -38,6 +43,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private String imgSrc;
     private SubsamplingScaleImageView scheduleImageView;
     private Bitmap bitmap;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +56,29 @@ public class ScheduleActivity extends AppCompatActivity {
         password = usedIntent.getStringExtra("password");
         scheduleImageView = (SubsamplingScaleImageView) findViewById(R.id.activity_schedule_image);
 
+        logoutButton = (Button) findViewById(R.id.activity_schedule_logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferencesManager manager =
+                        SharedPreferencesManager.getInstance(getApplicationContext());
+                manager.setAutoconnect(false);
+                manager.reset();
+                Intent startLogin = new Intent(ScheduleActivity.this, LoginActivity.class);
+                startActivity(startLogin);
+                finish();
+            }
+        });
+
+        progressDialog = new ProgressDialog(ScheduleActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.show();
         new AsyncScheduleGetter().execute();
     }
 
     private void displayImage() {
+        progressDialog.dismiss();
         scheduleImageView.setImage(ImageSource.bitmap(bitmap));
     }
 
@@ -105,10 +130,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 conn.setRequestProperty("Cookie", cookie);
 
-
-
                 status = conn.getResponseCode();
-                if (status != 302 && (status < 200 || status > 299))
+                if (status < 200 || status > 299)
                     return status;
 
                 // Get screen size
@@ -130,9 +153,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
 
                 status = conn.getResponseCode();
-                if (status != 302 && (status < 200 || status > 299))
+                if (status < 200 || status > 299)
                     return status;
-
 
                 userPageHtmlStream = conn.getInputStream();
                 userPageHtmlString = IOUtils.toString(userPageHtmlStream, "UTF-8");
@@ -150,7 +172,6 @@ public class ScheduleActivity extends AppCompatActivity {
                     return 2;
                 }
 
-
                 url = new URL(imgSrc);
                 conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -160,7 +181,6 @@ public class ScheduleActivity extends AppCompatActivity {
                 conn.setRequestProperty ("Authorization", basicAuth);
                 conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 conn.setRequestProperty("Cookie", cookie);
-
 
                 status = conn.getResponseCode();
                 if (status != 302 && (status < 200 || status > 299))
@@ -177,8 +197,31 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Integer result) {
-            // TODO ERROR MANAGEMENT
-            if(result == 0)
+            if(result != 0) {
+                switch (result) {
+                    case 1:
+                        Toast.makeText(getApplicationContext(),
+                                R.string.exception,
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    case 2:
+                        Toast.makeText(getApplicationContext(),
+                                R.string.error_retrieving_schedule_url,
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    case 302:
+                        Toast.makeText(getApplicationContext(),
+                                R.string.redirected,
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(),
+                                R.string.error_code + result,
+                                Toast.LENGTH_LONG).show();
+                }
+                progressDialog.dismiss();
+            }
+            else
                 displayImage();
         }
     }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ENSIEDT</string>
+    <string name="app_name">Ensiedt</string>
 
     <!-- Strings related to login -->
     <string name="prompt_login">Login</string>
@@ -10,10 +10,15 @@
     <string name="error_field_required">This field is required</string>
     <string name="ensiedt">ENSIMAG EDT</string>
     <string name="ensimag_logo">ENSIMAG Logo</string>
-    <string name="help_login">Use your INP login/password</string>
+    <string name="help_login">Use your ENSIMAG CAS login/password</string>
     <string name="remember_me">Remember me</string>
     <string name="error_password_format">Between 8 and 24 alphanumeric characters</string>
     <string name="exc_conn">Error while trying to connect to Zenith</string>
-    <string name="error_code">Error code:</string>
+    <string name="error_code">Error code: </string>
     <string name="error_retrieving_schedule_url">Error while retrieving schedule URL</string>
+    <string name="logout">Logout</string>
+    <string name="exception">Exception while retrieving schedule, please logout…</string>
+    <string name="redirected">Error, you have been redirected, please logout…</string>
+    <string name="auth">Authenticating…</string>
+    <string name="loading">Loading…</string>
 </resources>

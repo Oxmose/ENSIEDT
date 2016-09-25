@@ -21,7 +21,7 @@
             android:id="@+id/login_activity_logo"
             android:src="@drawable/logo_ensimag"
             android:contentDescription="@string/ensimag_logo"
-            android:background="@color/colorPrimary"
+            android:background="#E3F2FD"
             android:padding="20dp"
             android:elevation="5dp"/>
 
@@ -50,7 +50,7 @@
             android:id="@+id/login_activity_password_input_container"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="0dp"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/login_activity_password_input"
@@ -62,34 +62,48 @@
                 android:layout_alignStart="@+id/view" />
         </android.support.design.widget.TextInputLayout>
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/remember_me"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="20dp"
-            android:id="@+id/login_activity_autoconect_switch"
-            android:layout_gravity="right" />
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/login_activity_login_button"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:text="@string/action_sign_in_short"
-            android:textSize="20sp"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:textColor="@color/white"
-            android:gravity="center"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="20dp"
-            android:layout_gravity="right" />
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="15dp">
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remember_me"
+                android:id="@+id/login_activity_autoconect_switch"
+                android:layout_marginTop="22dp"/>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/login_activity_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="@string/action_sign_in_short"
+                android:textSize="20sp"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:layout_gravity="right" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/help_login"
             android:id="@+id/login_activity_help_text"
+            android:layout_gravity="center_horizontal" />
+
+        <ImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:id="@+id/activity_login_oxmose_logo"
+            android:src="@drawable/logo_full"
+            android:layout_marginTop="50dp"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
