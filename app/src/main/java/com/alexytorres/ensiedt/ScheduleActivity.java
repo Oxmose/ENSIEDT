@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -23,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.TimeZone;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +39,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private Button logoutButton;
     private Button precButton;
     private Button nextButton;
+    private TextView weekText;
 
     private int week;
 
@@ -60,6 +63,7 @@ public class ScheduleActivity extends AppCompatActivity {
         login    = usedIntent.getStringExtra("login");
         password = usedIntent.getStringExtra("password");
         scheduleImageView = (SubsamplingScaleImageView) findViewById(R.id.activity_schedule_image);
+        weekText = (TextView) findViewById(R.id.activity_schedule_week);
 
         precButton = (Button) findViewById(R.id.activity_schedule_prec_button);
         precButton.setOnClickListener(new View.OnClickListener() {
@@ -116,13 +120,16 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void displayImage() {
+        scheduleImageView.setImage(ImageSource.bitmap(bitmap));
+        scheduleImageView.invalidate();
+
+        //Set week
+        weekText.setText(getString(R.string.week) + week);
+
         nextButton.setEnabled(true);
         precButton.setEnabled(true);
         logoutButton.setEnabled(true);
         progressDialog.dismiss();
-
-        scheduleImageView.setImage(ImageSource.bitmap(bitmap));
-        scheduleImageView.invalidate();
     }
 
     private class AsyncScheduleGetter extends AsyncTask<Void, Void, Integer> {
@@ -230,7 +237,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 else {
                     imgSrc = imgSrc.replaceAll("PianoWeek=[0-9]*", "PianoWeek=" + week);
                 }
-                
+
                 url = new URL(imgSrc);
                 conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
