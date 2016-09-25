@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,10 @@ public class ScheduleActivity extends AppCompatActivity {
     private String login;
     private String password;
     private Button logoutButton;
+    private Button precButton;
+    private Button nextButton;
+
+    private int week;
 
     final private String scheduleFrame = "https://edt.grenoble-inp.fr/2016-2017/ensimag/etudiant/" +
             "jsp/custom/modules/plannings/direct_planning.jsp?resources=";
@@ -56,6 +61,32 @@ public class ScheduleActivity extends AppCompatActivity {
         password = usedIntent.getStringExtra("password");
         scheduleImageView = (SubsamplingScaleImageView) findViewById(R.id.activity_schedule_image);
 
+        precButton = (Button) findViewById(R.id.activity_schedule_prec_button);
+        precButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nextButton.setEnabled(false);
+                precButton.setEnabled(false);
+                logoutButton.setEnabled(false);
+                progressDialog.show();
+                --week;
+                new AsyncScheduleGetter().execute();
+            }
+        });
+
+        nextButton = (Button) findViewById(R.id.activity_schedule_next_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nextButton.setEnabled(false);
+                precButton.setEnabled(false);
+                logoutButton.setEnabled(false);
+                progressDialog.show();
+                ++week;
+                new AsyncScheduleGetter().execute();
+            }
+        });
+
         logoutButton = (Button) findViewById(R.id.activity_schedule_logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,12 +105,24 @@ public class ScheduleActivity extends AppCompatActivity {
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage(getString(R.string.loading));
         progressDialog.show();
+
+        week = 0;
+
+        nextButton.setEnabled(false);
+        precButton.setEnabled(false);
+        logoutButton.setEnabled(false);
+
         new AsyncScheduleGetter().execute();
     }
 
     private void displayImage() {
+        nextButton.setEnabled(true);
+        precButton.setEnabled(true);
+        logoutButton.setEnabled(true);
         progressDialog.dismiss();
+
         scheduleImageView.setImage(ImageSource.bitmap(bitmap));
+        scheduleImageView.invalidate();
     }
 
     private class AsyncScheduleGetter extends AsyncTask<Void, Void, Integer> {
@@ -172,6 +215,22 @@ public class ScheduleActivity extends AppCompatActivity {
                     return 2;
                 }
 
+                //Get week
+                if(week == 0) {
+                    p = Pattern.compile("PianoWeek=(.*)&idP");
+                    m = p.matcher(imgSrc);
+                    if(m.find()){
+                        MatchResult mr = m.toMatchResult();
+                        week = Integer.parseInt(mr.group(1));
+                    }
+                    else {
+                        return 2;
+                    }
+                }
+                else {
+                    imgSrc = imgSrc.replaceAll("PianoWeek=[0-9]*", "PianoWeek=" + week);
+                }
+                
                 url = new URL(imgSrc);
                 conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");

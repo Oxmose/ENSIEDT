@@ -21,4 +21,6 @@
     <string name="redirected">Vous avez été déconnecté, veuillez vous reconnecter…</string>
     <string name="auth">Connexion…</string>
     <string name="loading">Chargement…</string>
+    <string name="next_week">Suivant</string>
+    <string name="prev_week">Precedent</string>
 </resources>
