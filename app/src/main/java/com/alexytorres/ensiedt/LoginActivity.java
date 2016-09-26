@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -32,10 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     private AppCompatButton loginButton;
     private Switch rememberMeSwitch;
     private ProgressDialog progressDialog;
-
-    final private String ZENITH_URL = "https://intranet.ensimag.fr/Zenith2";
-    final private String USERPAGE_URL =
-            "https://intranet.ensimag.fr/Zenith2/Utilisateur/home?login=";
 
     private String scheduleUrl;
 
@@ -93,7 +88,17 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordField.getText().toString();
 
         int passwordLength = password.length();
-        if(8 > passwordLength || 24 < passwordLength) {
+        int loginLength = login.length();
+        if(loginLength == 0 && passwordLength == 0) {
+            onValidFailed(2);
+        }
+        else if(loginLength == 0) {
+            onValidFailed(3);
+        }
+        else if(passwordLength == 0) {
+            onValidFailed(4);
+        }
+        else if(8 > passwordLength || 24 < passwordLength) {
             onValidFailed(1);
         }
         else {
@@ -106,6 +111,16 @@ public class LoginActivity extends AppCompatActivity {
         switch (error) {
             case 1:
                 passwordField.setError(getString(R.string.error_password_format));
+                break;
+            case 2:
+                passwordField.setError(getString(R.string.error_invalid_password));
+                loginField.setError(getString(R.string.error_invalid_login));
+                break;
+            case 3:
+                loginField.setError(getString(R.string.error_invalid_login));
+                break;
+            case 4:
+                passwordField.setError(getString(R.string.error_invalid_password));
                 break;
             default:
                 passwordField.setError(getString(R.string.error_invalid_password));
@@ -145,6 +160,7 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 // First log in
+                String ZENITH_URL = "https://intranet.ensimag.fr/Zenith2";
                 URL url = new URL(ZENITH_URL);
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -159,6 +175,7 @@ public class LoginActivity extends AppCompatActivity {
                     return status;
 
                 // Get schedule URL
+                String USERPAGE_URL = "https://intranet.ensimag.fr/Zenith2/Utilisateur/home?login=";
                 url = new URL(USERPAGE_URL + strings[0]);
                 conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");

@@ -9,19 +9,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.LazyHeaderFactory;
-import com.bumptech.glide.load.model.LazyHeaders;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.pkmmte.view.CircularImageView;
 
 import org.apache.commons.io.IOUtils;
 
@@ -42,16 +36,9 @@ public class ScheduleActivity extends AppCompatActivity {
     private Button logoutButton;
     private Button precButton;
     private Button nextButton;
-    private CircularImageView userImage;
 
     private int week;
 
-    final private String scheduleFrame = "https://edt.grenoble-inp.fr/2016-2017/ensimag/etudiant/" +
-            "jsp/custom/modules/plannings/direct_planning.jsp?resources=";
-    final private String scheduleImage = "https://edt.grenoble-inp.fr/2016-2017/ensimag/etudiant/" +
-            "jsp/custom/modules/plannings/imagemap.jsp?clearTree=false&projectId=4&";
-    final private String rootUrl = "https://edt.grenoble-inp.fr/";
-    private String imgSrc;
     private SubsamplingScaleImageView scheduleImageView;
     private Bitmap bitmap;
     private ProgressDialog progressDialog;
@@ -67,7 +54,6 @@ public class ScheduleActivity extends AppCompatActivity {
         password = usedIntent.getStringExtra("password");
 
         scheduleImageView = (SubsamplingScaleImageView) findViewById(R.id.activity_schedule_image);
-        userImage = (CircularImageView) findViewById(R.id.activity_schedule_user_image);
 
         precButton = (Button) findViewById(R.id.activity_schedule_prec_button);
         precButton.setOnClickListener(new View.OnClickListener() {
@@ -173,6 +159,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 }
 
 
+                String scheduleFrame = "https://edt.grenoble-inp.fr/2016-2017/ensimag/etudiant/" +
+                        "jsp/custom/modules/plannings/direct_planning.jsp?resources=";
                 url = new URL(scheduleFrame + resources);
                 conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -194,6 +182,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 int width = size.x;
                 int height = size.y;
 
+                String scheduleImage = "https://edt.grenoble-inp.fr/2016-2017/ensimag/etudiant/" +
+                        "jsp/custom/modules/plannings/imagemap.jsp?clearTree=false&projectId=4&";
                 url = new URL(scheduleImage + "width=" + width + "&height= " + height);
                 conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -213,11 +203,12 @@ public class ScheduleActivity extends AppCompatActivity {
                 userPageHtmlString = IOUtils.toString(userPageHtmlStream, "UTF-8");
 
                 // Get resources
-                imgSrc = "";
+                String imgSrc;
                 p = Pattern.compile("src=\"(.*image.*)\" w");
                 m = p.matcher(userPageHtmlString);
                 if(m.find()){
                     MatchResult mr = m.toMatchResult();
+                    String rootUrl = "https://edt.grenoble-inp.fr/";
                     imgSrc = rootUrl + mr.group(1);
                 }
                 else {

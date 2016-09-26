@@ -1,11 +1,9 @@
 package com.alexytorres.ensiedt;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by Alexy on 25/09/2016.
- */
 public class SharedPreferencesManager {
     // Singleton and shared preferences object
     private static SharedPreferencesManager instance;
@@ -14,6 +12,7 @@ public class SharedPreferencesManager {
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
 
+    @SuppressLint("CommitPrefEdits")
     private SharedPreferencesManager(Context context) {
         prefs = context.getSharedPreferences(globalKey, Context.MODE_PRIVATE);
         editor = prefs.edit();
