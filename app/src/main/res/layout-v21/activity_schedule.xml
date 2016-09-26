@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -25,6 +25,16 @@
                 android:id="@+id/activity_schedule_prec_button"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_gravity="center_horizontal" />
+            <com.pkmmte.view.CircularImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                app:border_color="#333333"
+                app:border_width="2dp"
+                android:id="@+id/activity_schedule_user_image"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                app:shadow="true"
+                />
             <android.support.v7.widget.AppCompatButton
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

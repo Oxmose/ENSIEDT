@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage(getString(R.string.auth));
+        progressDialog.setCancelable(false);
 
         if(rememberMeSwitch.isChecked() &&
                 !manager.getLogin().equals("") &&

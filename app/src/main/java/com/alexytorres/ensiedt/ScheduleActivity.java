@@ -13,18 +13,21 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaderFactory;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.pkmmte.view.CircularImageView;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.TimeZone;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +42,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private Button logoutButton;
     private Button precButton;
     private Button nextButton;
-    private TextView weekText;
+    private CircularImageView userImage;
 
     private int week;
 
@@ -62,8 +65,9 @@ public class ScheduleActivity extends AppCompatActivity {
         scheduleUrl   = usedIntent.getStringExtra("schedule_url");
         login    = usedIntent.getStringExtra("login");
         password = usedIntent.getStringExtra("password");
+
         scheduleImageView = (SubsamplingScaleImageView) findViewById(R.id.activity_schedule_image);
-        weekText = (TextView) findViewById(R.id.activity_schedule_week);
+        userImage = (CircularImageView) findViewById(R.id.activity_schedule_user_image);
 
         precButton = (Button) findViewById(R.id.activity_schedule_prec_button);
         precButton.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +112,7 @@ public class ScheduleActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(ScheduleActivity.this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
         week = 0;
@@ -122,9 +127,6 @@ public class ScheduleActivity extends AppCompatActivity {
     private void displayImage() {
         scheduleImageView.setImage(ImageSource.bitmap(bitmap));
         scheduleImageView.invalidate();
-
-        //Set week
-        weekText.setText(getString(R.string.week) + week);
 
         nextButton.setEnabled(true);
         precButton.setEnabled(true);
@@ -159,7 +161,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 String userPageHtmlString = IOUtils.toString(userPageHtmlStream, "UTF-8");
 
                 // Get resources
-                String resources = "";
+                String resources;
                 Pattern p = Pattern.compile("value=\"(.*)\">");
                 Matcher m = p.matcher(userPageHtmlString);
                 if(m.find()){
@@ -169,6 +171,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 else {
                     return 2;
                 }
+
 
                 url = new URL(scheduleFrame + resources);
                 conn = (HttpsURLConnection) url.openConnection();
@@ -209,7 +212,6 @@ public class ScheduleActivity extends AppCompatActivity {
                 userPageHtmlStream = conn.getInputStream();
                 userPageHtmlString = IOUtils.toString(userPageHtmlStream, "UTF-8");
 
-                // Get image URL
                 // Get resources
                 imgSrc = "";
                 p = Pattern.compile("src=\"(.*image.*)\" w");
